@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>School Talk – engelska för skolan</title>
+  <meta name="description" content="Träna engelska som används i skolan: dialoger, rollspel, fraser, övningar och ord, med brittisk uppläsning.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f2f4f'/%3E%3Cpath d='M14 18h36a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H30l-10 8v-8h-6a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4z' fill='%23e8b84a'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#/">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 14h36a5 5 0 0 1 5 5v20a5 5 0 0 1-5 5H31l-11 9v-9h-6a5 5 0 0 1-5-5V19a5 5 0 0 1 5-5z" fill="#e8b84a"/><circle cx="23" cy="29" r="3" fill="#1f2f4f"/><circle cx="32" cy="29" r="3" fill="#1f2f4f"/><circle cx="41" cy="29" r="3" fill="#c4673f"/></svg>
+        <span>School Talk</span>
+      </a>
+      <nav class="main-nav" aria-label="Huvudmeny">
+        <a href="#/dialoger" data-nav="dialoger">Dialoger</a>
+        <a href="#/rollspel" data-nav="rollspel">Rollspel</a>
+        <a href="#/fraser" data-nav="fraser">Fraser</a>
+        <a href="#/trana" data-nav="trana">Träna</a>
+        <a href="#/ord" data-nav="ord">Ord</a>
+      </nav>
+    </div>
+    <div class="toolbar">
+      <div class="wrap toolbar-inner">
+        <label class="switch"><input type="checkbox" id="opt-slow"><span class="slider"></span><span class="switch-label">🐢 Långsamt</span></label>
+        <label class="switch"><input type="checkbox" id="opt-sv" checked><span class="slider"></span><span class="switch-label">Svensk<span class="long-label"> översättning</span></span></label>
+        <button class="voice-btn" id="voice-btn" type="button" aria-expanded="false">Röst</button>
+      </div>
+      <div class="voice-panel wrap" id="voice-panel" hidden>
+        <label for="voice-select">Välj brittisk röst</label>
+        <div class="voice-row">
+          <select id="voice-select"></select>
+          <button class="btn small" id="voice-test" type="button">Testa</button>
+        </div>
+        <p class="voice-note" id="voice-note"></p>
+      </div>
+    </div>
+  </header>
+
+  <main id="app" class="wrap" tabindex="-1"></main>
+
+  <footer class="site-footer">
+    <div class="wrap">School Talk · Engelska för klassrummet, mattelektionen och lärarrummet. Uppläsningen sker med webbläsarens egna röster.</div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
