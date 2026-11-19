@@ -34,6 +34,7 @@ body {
 }
 main { flex: 1; padding-top: 28px; padding-bottom: 56px; outline: none; }
 .wrap { width: 100%; max-width: 980px; margin: 0 auto; padding: 0 16px; }
+main.wrap { padding-top: 28px; padding-bottom: 56px; }
 h1, h2, h3 { color: var(--navy); line-height: 1.2; margin: 0 0 .4em; }
 h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); font-weight: 800; }
 h2 { font-size: 1.35rem; font-weight: 800; }
@@ -208,6 +209,19 @@ body.hide-sv .sv.revealed { filter: none; cursor: auto; user-select: auto; }
 .result-box { text-align: center; padding: 26px 10px; }
 .result-box .big { font-size: 2.6rem; font-weight: 800; color: var(--terracotta); }
 
+/* Grammar */
+.rule-card { border-left: 5px solid var(--yellow); }
+.rules { margin: 6px 0 0; padding-left: 20px; }
+.rules li { margin-bottom: 10px; }
+.rules li:last-child { margin-bottom: 0; }
+.rules strong { color: var(--terracotta-dark); }
+.rules em { color: var(--muted); }
+.gap { display: inline-block; min-width: 70px; border-bottom: 3px solid var(--terracotta); text-align: center; color: var(--terracotta); padding: 0 4px; }
+.gap.filled { color: var(--ok); border-bottom-color: var(--ok); }
+.gap.filled.was-wrong { color: var(--ok); }
+.gap-options { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.gap-options .option { text-align: center; }
+
 /* Words */
 .word-tools { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
 .search { font: inherit; padding: 9px 14px; border-radius: 12px; border: 1.5px solid var(--line); min-width: 0; flex: 1; max-width: 340px; background: #fff; }
@@ -234,8 +248,8 @@ body.hide-sv .sv.revealed { filter: none; cursor: auto; user-select: auto; }
   .switch { font-size: .88rem; gap: 6px; }
   .voice-btn { padding: 3px 10px; font-size: .85rem; }
   .long-label { display: none; }
-  .main-nav { margin-left: 0; width: 100%; }
-  .main-nav a { padding: 6px 10px; }
+  .main-nav { margin-left: 0; width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .main-nav a { padding: 6px 4px; text-align: center; font-size: .95rem; }
   .hero { padding: 26px 20px; }
   .hero > * { max-width: 100%; }
   .hero::after { width: 140px; height: 140px; right: -60px; top: -60px; }

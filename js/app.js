@@ -164,6 +164,7 @@
         <a class="tile" href="#/fraser"><span class="t-icon">🗣️</span><strong>Fraser</strong><span class="small">Korta fraser att lyssna på och säga efter.</span></a>
         <a class="tile" href="#/trana"><span class="t-icon">✏️</span><strong>Träna</strong><span class="small">Matcha, välj, bygg meningar och skriv.</span></a>
         <a class="tile" href="#/ord"><span class="t-icon">📚</span><strong>Ord</strong><span class="small">Skolord och matteord med uttal.</span></a>
+        <a class="tile" href="#/grammatik"><span class="t-icon">🧩</span><strong>Grammatik</strong><span class="small">Korta regler, exempel och övningar.</span></a>
       </div>
       <div class="howto">
         <div><strong>▶ Lyssna</strong><br>Allt läses upp med en brittisk röst. Tryck på 🐢 för att höra det långsamt.</div>
@@ -429,6 +430,71 @@
     });
   }
 
+  /* ---------- Grammatik ---------- */
+  function pageGrammar(id) {
+    const g = GRAMMAR.find((x) => x.id === id) || GRAMMAR[0];
+    app.innerHTML = `
+      <h1>Grammatik</h1>
+      <p class="lead">Den grammatik som oftast behövs när man pratar engelska i skolan. Läs regeln, lyssna på exemplen och testa dig själv.</p>
+      ${voiceBanner()}
+      <div class="chips">${GRAMMAR.map((x) => `<a class="chip${x.id === g.id ? " active" : ""}" href="#/grammatik/${x.id}">${x.icon} ${esc(x.sv)}</a>`).join("")}</div>
+      <section class="card rule-card">
+        <div class="q-label" lang="en">${esc(g.en)}</div>
+        <h2>${g.icon} ${esc(g.sv)}</h2>
+        <ul class="rules">${g.rule.map((r) => `<li>${r}</li>`).join("")}</ul>
+      </section>
+      <section class="card">
+        <h2>Exempel</h2>
+        ${g.examples.map((e) => `
+          <div class="line">
+            <div class="txt">${enSpan(e[0])}${svSpan(e[1])}</div>
+            <div class="acts">${playBtns(e[0])}</div>
+          </div>`).join("")}
+      </section>
+      <section class="card" id="gquiz"></section>`;
+    grammarQuiz($("#gquiz"), g);
+  }
+  function grammarQuiz(box, g) {
+    const qs = shuffle(g.quiz);
+    let n = 0, right = 0;
+    const full = (q) => q[0].replace("___", q[1]);
+    const next = () => {
+      if (n >= qs.length) {
+        const pct = Math.round(100 * right / qs.length);
+        const msg = pct === 100 ? "Perfekt! 🎉" : pct >= 70 ? "Bra jobbat! 👏" : "Läs regeln en gång till och försök igen! 💪";
+        const idx = GRAMMAR.indexOf(g), nxt = GRAMMAR[(idx + 1) % GRAMMAR.length];
+        box.innerHTML = `<h2>Öva</h2><div class="result-box"><div class="big">${right} / ${qs.length}</div><p class="status">${msg}</p><div class="btn-row" style="justify-content:center"><button class="btn" type="button" id="gagain">Gör igen</button><a class="btn secondary" href="#/grammatik/${nxt.id}">Nästa: ${esc(nxt.sv)} ▶</a></div></div>`;
+        $("#gagain", box).addEventListener("click", () => grammarQuiz(box, g));
+        return;
+      }
+      const q = qs[n];
+      const opts = shuffle([q[1], ...q[2]]);
+      const parts = q[0].split("___").map(esc);
+      box.innerHTML = `
+        <div class="dialog-head"><h2>Öva</h2><span class="score">${right} / ${qs.length} rätt</span></div>
+        <div class="q-label">Fråga ${n + 1} av ${qs.length} · Välj det som passar</div>
+        <div class="q-prompt gap-sentence" lang="en">${parts.join('<span class="gap" id="gap">&nbsp;?&nbsp;</span>')}</div>
+        ${svSpan(q[3])}
+        <div class="options gap-options">${opts.map((o, i) => `<button class="option" type="button" data-i="${i}" lang="en">${esc(o)}</button>`).join("")}</div>
+        <div class="feedback" id="gfb"></div>
+        <div id="gnx"></div>`;
+      const fb = $("#gfb", box), gap = $("#gap", box);
+      box.querySelectorAll(".option").forEach((b) => b.addEventListener("click", () => {
+        const chosen = opts[+b.dataset.i];
+        box.querySelectorAll(".option").forEach((x) => { x.disabled = true; if (opts[+x.dataset.i] === q[1]) x.classList.add("correct"); });
+        gap.textContent = q[1];
+        gap.classList.add("filled");
+        if (chosen === q[1]) { right++; fb.className = "feedback ok"; fb.textContent = "Rätt! 👍"; }
+        else { b.classList.add("wrong"); gap.classList.add("was-wrong"); fb.className = "feedback bad"; fb.textContent = `Inte riktigt. Rätt svar är "${q[1]}".`; }
+        Speech.say(full(q));
+        $("#gnx", box).innerHTML = `<div class="btn-row"><button class="btn" type="button" id="gnext">Nästa ▶</button>${playBtns(full(q))}</div>`;
+        $("#gnext", box).addEventListener("click", () => { n++; next(); });
+        $("#gnext", box).focus();
+      }));
+    };
+    next();
+  }
+
   /* ---------- Träna ---------- */
   const EXERCISES = [
     { id: "matcha", label: "Matcha" },
@@ -689,6 +755,7 @@
       case "fraser": pagePhrases(a); break;
       case "trana": pagePractice(a, b); break;
       case "ord": pageWords(a); break;
+      case "grammatik": pageGrammar(a); break;
       case "tema": pageTheme(a); break;
       default: pageHome();
     }

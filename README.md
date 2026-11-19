@@ -8,4 +8,4 @@ Settings → Pages → Source: *Deploy from a branch* → Branch: `main`, mapp: 
 
 ## Ändra innehåll
 
-Allt innehåll (teman, dialoger, fraser och ordlistor) finns i `js/data.js`.
+Allt innehåll (teman, dialoger, fraser och ordlistor) finns i `js/data.js`. Grammatiken finns i `js/grammar.js`.
