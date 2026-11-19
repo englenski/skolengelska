@@ -20,7 +20,7 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 124px; }
+html { -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; scroll-padding-top: 124px; }
 body {
   margin: 0;
   font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -245,12 +245,22 @@ body.hide-sv .sv.revealed { filter: none; cursor: auto; user-select: auto; }
 
 .site-footer { background: var(--navy); color: #b9c3d9; font-size: .88rem; padding: 18px 0; }
 
-@media (hover: none) { .kbd-hint { display: none; } }
+@media (hover: none) {
+  .kbd-hint { display: none; }
+  /* Undvik att knappar ser "nedtryckta" ut efter tryck på pekskärm */
+  .word-chip:hover { background: #fff; color: var(--navy); }
+  .build-answer .word-chip:hover { background: var(--navy); color: #fff; }
+  .option:hover:not(:disabled) { border-color: var(--line); }
+  .tile:hover { transform: none; box-shadow: var(--shadow); }
+  .icon-btn:hover { background: var(--navy); }
+  .icon-btn.slow:hover { background: var(--yellow-soft); }
+}
+.icon-btn, .btn, .option, .word-chip, .chip, .tab { touch-action: manipulation; }
 
 @media (max-width: 640px) {
   body { font-size: 16px; }
-  .site-header { position: relative; }
-  html { scroll-padding-top: 16px; }
+  .site-header { position: sticky; top: calc(-1 * var(--hdr-offset, 0px)); }
+  html { scroll-padding-top: 64px; }
   .header-inner { gap: 6px; padding-top: 8px; padding-bottom: 8px; }
   .toolbar-inner { gap: 12px; }
   .switch { font-size: .88rem; gap: 6px; }
@@ -269,4 +279,8 @@ body.hide-sv .sv.revealed { filter: none; cursor: auto; user-select: auto; }
   .match .option { padding: 10px; font-size: .92rem; }
   .bubble { max-width: 95%; }
   .score { margin-left: 0; }
+  .word .icon-btn { width: 36px; height: 36px; }
+  .word .acts { flex-direction: row; }
+  .word { padding: 10px 12px; }
+  .word-grid { gap: 8px; }
 }

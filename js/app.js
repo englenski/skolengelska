@@ -30,14 +30,14 @@
       this.voices = gb.length ? gb : en;
       this.hasGB = gb.length > 0;
       const saved = store.get("voice", null);
-      const pref = ["Google UK English Female", "Google UK English Male", "Sonia", "Libby", "Ryan", "Serena", "Kate", "Daniel", "Arthur", "Martha", "Hazel", "George", "Susan"];
+      const pref = ["Daniel (Enhanced)", "Daniel (Förbättrad)", "Kate (Enhanced)", "Kate (Förbättrad)", "Serena (Enhanced)", "Serena (Förbättrad)", "Google UK English Female", "Google UK English Male", "Sonia", "Libby", "Ryan", "Daniel", "Kate", "Serena", "Arthur", "Martha", "Hazel", "George", "Susan"];
       let pick = this.voices.find((v) => v.name === saved);
       if (!pick) { for (const p of pref) { pick = this.voices.find((v) => v.name.includes(p)); if (pick) break; } }
       this.voice = pick || this.voices[0] || null;
       renderVoicePanel();
     },
     rate(slow) { return slow ? 0.62 : 0.92; },
-    cancel() { this.token++; if (this.supported) synth.cancel(); },
+    cancel() { this.token++; if (this.supported && (synth.speaking || synth.pending)) { synth.cancel(); this.justCancelled = true; } },
     /* Läser upp en text. Returnerar ett Promise som löses när uppläsningen är klar. */
     say(text, opts = {}) {
       const slow = opts.slow !== undefined ? opts.slow : Settings.slow;
@@ -57,7 +57,9 @@
         // Säkerhetsnät om onend aldrig kommer
         const words = text.split(/\s+/).length;
         setTimeout(finish, (words * (slow ? 900 : 600)) + 4000);
-        synth.speak(u);
+        // iOS/Safari tappar ibland en replik som startas direkt efter cancel(), därför en kort paus
+        if (Speech.justCancelled) { Speech.justCancelled = false; setTimeout(() => { if (my === Speech.token) synth.speak(u); else finish(); }, 80); }
+        else synth.speak(u);
       });
     },
     async sequence(items, onItem, opts = {}) {
@@ -74,6 +76,24 @@
     }
   };
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  // iOS kräver att talet "låses upp" av en användarinteraktion första gången
+  if (Speech.supported) {
+    const unlock = () => {
+      try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; synth.speak(u); } catch (e) { /* ignorera */ }
+      document.removeEventListener("touchend", unlock, true);
+      document.removeEventListener("click", unlock, true);
+    };
+    document.addEventListener("touchend", unlock, true);
+    document.addEventListener("click", unlock, true);
+  }
+
+  /* Mobil: rubrikraden glider undan men reglagen (Långsamt, Svensk) stannar kvar överst */
+  const header = document.querySelector(".site-header"), toolbarEl = document.querySelector(".toolbar");
+  const setHeaderOffset = () => document.documentElement.style.setProperty("--hdr-offset", (header.offsetHeight - toolbarEl.offsetHeight) + "px");
+  setHeaderOffset();
+  window.addEventListener("resize", setHeaderOffset);
+  new ResizeObserver(setHeaderOffset).observe(toolbarEl);
 
   /* ---------- Inställningar ---------- */
   const Settings = {
@@ -116,7 +136,10 @@
       return;
     }
     voiceSelect.innerHTML = Speech.voices.map((v) => `<option value="${esc(v.name)}"${Speech.voice && v.name === Speech.voice.name ? " selected" : ""}>${esc(v.name)} (${esc(v.lang)})</option>`).join("") || "<option>Inga engelska röster hittades</option>";
-    voiceNote.textContent = Speech.hasGB
+    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    voiceNote.textContent = ios
+      ? "iPhone/iPad: de bästa brittiska rösterna är Daniel, Kate eller Serena i förbättrad kvalitet. Hämta dem under Inställningar → Hjälpmedel → Uppläst innehåll → Röster → Engelska. Ladda sedan om sidan. Kontrollera också att telefonen inte står på ljudlöst om du inte hör något."
+      : Speech.hasGB
       ? "Rösterna kommer från din webbläsare och dator, så utbudet varierar mellan enheter."
       : "Ingen brittisk röst hittades, så en annan engelsk röst används. På Chromebook: kontrollera att datorn är ansluten till internet (Googles brittiska röster hämtas därifrån), eller lägg till Engelska (Storbritannien) under Inställningar → Tillgänglighet → Text-till-tal. På andra datorer: använd Chrome eller Edge.";
     const banner = $("#voice-banner");

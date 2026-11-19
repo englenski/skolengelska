@@ -94,7 +94,10 @@ const THEMES = [
       ["Is this right?", "Är det här rätt?"],
       ["I need more time.", "Jag behöver mer tid."],
       ["Do you mean this one?", "Menar du den här?"],
-      ["Thank you, that helps a lot.", "Tack, det hjälper mycket."]
+      ["Thank you, that helps a lot.", "Tack, det hjälper mycket."],
+      ["I can't log in.", "Jag kan inte logga in."],
+      ["I forgot my password.", "Jag har glömt mitt lösenord."],
+      ["My Chromebook won't turn on.", "Min Chromebook startar inte."]
     ]
   },
   {
@@ -140,7 +143,10 @@ const THEMES = [
       ["Hand in your work at the end of the lesson.", "Lämna in ert arbete i slutet av lektionen."],
       ["Don't forget to show your working.", "Glöm inte att visa era uträkningar."],
       ["When you have finished, check your answers.", "När ni är klara, kontrollera era svar."],
-      ["Stop writing and look at me, please.", "Sluta skriva och titta på mig, tack."]
+      ["Stop writing and look at me, please.", "Sluta skriva och titta på mig, tack."],
+      ["Log in to the maths website.", "Logga in på mattesidan."],
+      ["Do the tasks on your Chromebook.", "Gör uppgifterna på din Chromebook."],
+      ["Remember to charge your Chromebook at home.", "Kom ihåg att ladda din Chromebook hemma."]
     ]
   },
   {
@@ -187,6 +193,21 @@ const THEMES = [
           ["E", "Oh, then it's twenty-six centimetres.", "Jaha, då är det tjugosex centimeter."],
           ["T", "That's right. Don't forget the units.", "Det stämmer. Glöm inte enheterna."]
         ]
+      },
+      {
+        title: "Träna på datorn", en: "Practising on the computer",
+        roles: { T: "Lärare", E: "Elev" },
+        lines: [
+          ["T", "For the last fifteen minutes, you can practise on your Chromebooks.", "De sista femton minuterna får ni träna på era Chromebooks."],
+          ["E", "Which website should we use?", "Vilken webbplats ska vi använda?"],
+          ["T", "The maths website. The link is on the school platform.", "Mattesidan. Länken finns på skolplattformen."],
+          ["E", "I can't log in. I think I forgot my password.", "Jag kan inte logga in. Jag tror att jag har glömt mitt lösenord."],
+          ["T", "Try again. If it doesn't work, work with your neighbour.", "Försök igen. Om det inte fungerar, jobba med din bänkgranne."],
+          ["E", "Should we do level one or level two?", "Ska vi göra nivå ett eller nivå två?"],
+          ["T", "Start with level one. Move on when you get four right in a row.", "Börja med nivå ett. Gå vidare när du får fyra rätt i rad."],
+          ["E", "My Chromebook needs charging.", "Min Chromebook behöver laddas."],
+          ["T", "There's a charger by the window.", "Det finns en laddare vid fönstret."]
+        ]
       }
     ],
     phrases: [
@@ -203,7 +224,9 @@ const THEMES = [
       ["Check your answer by putting it back into the equation.", "Kontrollera svaret genom att sätta in det i ekvationen."],
       ["Plot the points on the graph.", "Pricka in punkterna i koordinatsystemet."],
       ["Simplify the expression.", "Förenkla uttrycket."],
-      ["What is the probability of getting a six?", "Hur stor är sannolikheten att få en sexa?"]
+      ["What is the probability of getting a six?", "Hur stor är sannolikheten att få en sexa?"],
+      ["Practise on the computer for ten minutes.", "Träna på datorn i tio minuter."],
+      ["Start with level one.", "Börja med nivå ett."]
     ]
   },
   {
@@ -499,6 +522,7 @@ const WORDS = {
         ["rubber", "suddgummi"], ["ruler", "linjal"], ["pencil case", "pennfodral"],
         ["sharpener", "pennvässare"], ["calculator", "miniräknare"], ["scissors", "sax"],
         ["glue stick", "limstift"], ["projector", "projektor"], ["laptop", "bärbar dator"], ["Chromebook", "Chromebook"], ["charger", "laddare"],
+        ["password", "lösenord"], ["log in", "logga in"], ["website", "webbplats"], ["link", "länk"], ["tab", "flik"],
         ["worksheet", "arbetsblad"], ["compasses", "passare"], ["protractor", "gradskiva"]
       ]},
       { title: "Skoldagen", items: [
