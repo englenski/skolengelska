@@ -118,7 +118,7 @@
     voiceSelect.innerHTML = Speech.voices.map((v) => `<option value="${esc(v.name)}"${Speech.voice && v.name === Speech.voice.name ? " selected" : ""}>${esc(v.name)} (${esc(v.lang)})</option>`).join("") || "<option>Inga engelska röster hittades</option>";
     voiceNote.textContent = Speech.hasGB
       ? "Rösterna kommer från din webbläsare och dator, så utbudet varierar mellan enheter."
-      : "Ingen brittisk röst hittades, så en annan engelsk röst används. Installera gärna Engelska (Storbritannien) under tal/röster i datorns eller telefonens inställningar, eller använd Chrome eller Edge.";
+      : "Ingen brittisk röst hittades, så en annan engelsk röst används. På Chromebook: kontrollera att datorn är ansluten till internet (Googles brittiska röster hämtas därifrån), eller lägg till Engelska (Storbritannien) under Inställningar → Tillgänglighet → Text-till-tal. På andra datorer: använd Chrome eller Edge.";
     const banner = $("#voice-banner");
     if (banner) banner.hidden = Speech.hasGB;
   }
@@ -477,7 +477,8 @@
         ${svSpan(q[3])}
         <div class="options gap-options">${opts.map((o, i) => `<button class="option" type="button" data-i="${i}" lang="en">${esc(o)}</button>`).join("")}</div>
         <div class="feedback" id="gfb"></div>
-        <div id="gnx"></div>`;
+        <div id="gnx"></div>
+        <p class="kbd-hint">Tips: tryck 1–${opts.length} på tangentbordet för att svara och Enter för nästa.</p>`;
       const fb = $("#gfb", box), gap = $("#gap", box);
       box.querySelectorAll(".option").forEach((b) => b.addEventListener("click", () => {
         const chosen = opts[+b.dataset.i];
@@ -612,7 +613,8 @@
           : `<div class="q-prompt" lang="sv">${esc(q.sv)}</div>`}
         <div class="options">${opts.map((o, i) => `<button class="option" type="button" data-i="${i}" lang="${toSv ? "sv" : "en"}">${esc(toSv ? o.sv : o.en)}</button>`).join("")}</div>
         <div class="feedback" id="fb"></div>
-        <div id="nx"></div>`;
+        <div id="nx"></div>
+        <p class="kbd-hint">Tips: tryck 1–4 på tangentbordet för att svara och Enter för nästa.</p>`;
       if (toSv) Speech.say(q.en);
       const fb = $("#fb", box);
       box.querySelectorAll(".option").forEach((b) => b.addEventListener("click", () => {
@@ -742,6 +744,18 @@
     setScore(0, qs.length);
     next();
   }
+
+  /* Tangentbord: siffertangenterna 1–4 väljer svar i flervalsfrågor */
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return;
+    const n = parseInt(e.key, 10);
+    if (!(n >= 1 && n <= 4)) return;
+    const opts = [...app.querySelectorAll(".options .option")];
+    const o = opts[n - 1];
+    if (o && !o.disabled) { e.preventDefault(); o.click(); }
+  });
 
   /* ---------- Router ---------- */
   function route() {

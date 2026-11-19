@@ -27,9 +27,9 @@ const THEMES = [
           ["T", "Can I have everyone's attention, please?", "Kan jag få allas uppmärksamhet, tack?"],
           ["T", "It's a bit noisy in here.", "Det är lite högljutt här inne."],
           ["E", "Sorry, we were talking about the homework.", "Förlåt, vi pratade om läxan."],
-          ["T", "That's good, but please put your phones away.", "Det är bra, men lägg undan era mobiler, tack."],
-          ["E", "Can I keep my phone on the desk?", "Får jag ha mobilen på bänken?"],
-          ["T", "No, it goes in your bag until the break.", "Nej, den ska ligga i väskan till rasten."],
+          ["T", "That's good, but please close your Chromebooks.", "Det är bra, men fäll ner era Chromebooks, tack."],
+          ["E", "Can I keep mine open to check the homework?", "Får jag ha min öppen för att kolla läxan?"],
+          ["T", "No, you can open it again after the break.", "Nej, du kan öppna den igen efter rasten."],
           ["E", "Okay. When is the break?", "Okej. När är rasten?"],
           ["T", "In twenty minutes. Let's get started.", "Om tjugo minuter. Nu sätter vi igång."]
         ]
@@ -40,7 +40,8 @@ const THEMES = [
       ["Open your books at page twenty.", "Öppna böckerna på sidan tjugo."],
       ["Can everyone see the board?", "Kan alla se tavlan?"],
       ["Put your hand up, please.", "Räck upp handen, tack."],
-      ["Please put your phones away.", "Lägg undan mobilerna, tack."],
+      ["Please close your Chromebooks.", "Fäll ner era Chromebooks, tack."],
+      ["Open your Chromebooks and log in.", "Öppna era Chromebooks och logga in."],
       ["Who is absent today?", "Vem är frånvarande idag?"],
       ["Let's get started.", "Nu sätter vi igång."],
       ["Please work quietly.", "Arbeta tyst, tack."],
@@ -497,7 +498,7 @@ const WORDS = {
         ["exercise book", "skrivhäfte"], ["textbook", "lärobok"], ["pencil", "blyertspenna"],
         ["rubber", "suddgummi"], ["ruler", "linjal"], ["pencil case", "pennfodral"],
         ["sharpener", "pennvässare"], ["calculator", "miniräknare"], ["scissors", "sax"],
-        ["glue stick", "limstift"], ["projector", "projektor"], ["laptop", "bärbar dator"],
+        ["glue stick", "limstift"], ["projector", "projektor"], ["laptop", "bärbar dator"], ["Chromebook", "Chromebook"], ["charger", "laddare"],
         ["worksheet", "arbetsblad"], ["compasses", "passare"], ["protractor", "gradskiva"]
       ]},
       { title: "Skoldagen", items: [
