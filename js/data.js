@@ -144,7 +144,7 @@ const THEMES = [
       ["Don't forget to show your working.", "Glöm inte att visa era uträkningar."],
       ["When you have finished, check your answers.", "När ni är klara, kontrollera era svar."],
       ["Stop writing and look at me, please.", "Sluta skriva och titta på mig, tack."],
-      ["Log in to the maths website.", "Logga in på mattesidan."],
+      ["Log in to Mattekompassen.", "Logga in på Mattekompassen."],
       ["Do the tasks on your Chromebook.", "Gör uppgifterna på din Chromebook."],
       ["Remember to charge your Chromebook at home.", "Kom ihåg att ladda din Chromebook hemma."]
     ]
@@ -200,7 +200,7 @@ const THEMES = [
         lines: [
           ["T", "For the last fifteen minutes, you can practise on your Chromebooks.", "De sista femton minuterna får ni träna på era Chromebooks."],
           ["E", "Which website should we use?", "Vilken webbplats ska vi använda?"],
-          ["T", "The maths website. The link is on the school platform.", "Mattesidan. Länken finns på skolplattformen."],
+          ["T", "Mattekompassen. The link is on the school platform.", "Mattekompassen. Länken finns på skolplattformen."],
           ["E", "I can't log in. I think I forgot my password.", "Jag kan inte logga in. Jag tror att jag har glömt mitt lösenord."],
           ["T", "Try again. If it doesn't work, work with your neighbour.", "Försök igen. Om det inte fungerar, jobba med din bänkgranne."],
           ["E", "Should we do level one or level two?", "Ska vi göra nivå ett eller nivå två?"],
@@ -225,7 +225,7 @@ const THEMES = [
       ["Plot the points on the graph.", "Pricka in punkterna i koordinatsystemet."],
       ["Simplify the expression.", "Förenkla uttrycket."],
       ["What is the probability of getting a six?", "Hur stor är sannolikheten att få en sexa?"],
-      ["Practise on the computer for ten minutes.", "Träna på datorn i tio minuter."],
+      ["Practise on Mattekompassen for ten minutes.", "Träna på Mattekompassen i tio minuter."],
       ["Start with level one.", "Börja med nivå ett."]
     ]
   },
