@@ -37,29 +37,46 @@
       renderVoicePanel();
     },
     rate(slow) { return slow ? 0.62 : 0.92; },
-    cancel() { this.token++; if (this.supported && (synth.speaking || synth.pending)) { synth.cancel(); this.justCancelled = true; } },
-    /* Läser upp en text. Returnerar ett Promise som löses när uppläsningen är klar. */
+    cancel() { this.token++; if (this.supported && (synth.speaking || synth.pending)) synth.cancel(); },
+    /* Läser upp en text. Returnerar ett Promise som löses när uppläsningen är klar.
+       iOS/Safari: speak() måste anropas direkt i klicket (ingen setTimeout före), annars
+       blockeras ljudet. Om iOS ändå tappar repliken (vanligt direkt efter cancel() eller när
+       sidan legat i bakgrunden) görs ett nytt försök, sista gången utan vald röst. */
     say(text, opts = {}) {
       const slow = opts.slow !== undefined ? opts.slow : Settings.slow;
       if (!opts.keep) this.cancel();
       const my = this.token;
       return new Promise((resolve) => {
         if (!this.supported) { setTimeout(resolve, 600); return; }
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = (this.voice && this.voice.lang) || "en-GB";
-        if (this.voice) u.voice = this.voice;
-        u.rate = this.rate(slow);
-        u.pitch = 1;
-        let done = false;
+        let done = false, started = false;
         const finish = () => { if (!done) { done = true; resolve(my === Speech.token); } };
-        u.onend = finish;
-        u.onerror = finish;
+        const speak = (attempt) => {
+          const u = new SpeechSynthesisUtterance(text);
+          const useVoice = this.voice && attempt < 2;
+          u.lang = (this.voice && this.voice.lang) || "en-GB";
+          if (useVoice) u.voice = this.voice;
+          u.rate = this.rate(slow);
+          u.pitch = 1;
+          u.onstart = () => { started = true; };
+          u.onend = () => { if (Speech.current === u) finish(); };
+          u.onerror = (e) => {
+            if (Speech.current !== u || done) return;
+            if (e && (e.error === "interrupted" || e.error === "canceled")) { finish(); return; }
+            if (!started && attempt < 2 && my === Speech.token) { speak(attempt + 1); return; }
+            finish();
+          };
+          Speech.current = u; // håll kvar en referens, annars kan Safari slänga repliken och onend uteblir
+          try { if (synth.paused) synth.resume(); synth.speak(u); } catch (e) { finish(); return; }
+          // Kom aldrig igång? Försök igen (iOS tappar ibland repliken utan felmeddelande)
+          setTimeout(() => {
+            if (done || started || synth.speaking || Speech.current !== u || my !== Speech.token) return;
+            if (attempt < 2) { synth.cancel(); speak(attempt + 1); } else finish();
+          }, 1500);
+        };
         // Säkerhetsnät om onend aldrig kommer
         const words = text.split(/\s+/).length;
-        setTimeout(finish, (words * (slow ? 900 : 600)) + 4000);
-        // iOS/Safari tappar ibland en replik som startas direkt efter cancel(), därför en kort paus
-        if (Speech.justCancelled) { Speech.justCancelled = false; setTimeout(() => { if (my === Speech.token) synth.speak(u); else finish(); }, 80); }
-        else synth.speak(u);
+        setTimeout(finish, (words * (slow ? 900 : 600)) + 7500);
+        speak(0);
       });
     },
     async sequence(items, onItem, opts = {}) {
@@ -77,15 +94,11 @@
   };
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-  // iOS kräver att talet "låses upp" av en användarinteraktion första gången
+  // iOS: när sidan kommer tillbaka från bakgrunden (eller hemskärmen) kan talkön hänga sig.
   if (Speech.supported) {
-    const unlock = () => {
-      try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; synth.speak(u); } catch (e) { /* ignorera */ }
-      document.removeEventListener("touchend", unlock, true);
-      document.removeEventListener("click", unlock, true);
-    };
-    document.addEventListener("touchend", unlock, true);
-    document.addEventListener("click", unlock, true);
+    const reset = () => { if (document.visibilityState === "visible" && !synth.speaking) { try { synth.cancel(); } catch (e) { /* ignorera */ } } };
+    document.addEventListener("visibilitychange", reset);
+    window.addEventListener("pageshow", reset);
   }
 
   /* Mobil: rubrikraden glider undan men reglagen (Långsamt, Svensk) stannar kvar överst */
