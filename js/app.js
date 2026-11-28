@@ -45,6 +45,7 @@
     say(text, opts = {}) {
       const slow = opts.slow !== undefined ? opts.slow : Settings.slow;
       if (!opts.keep) this.cancel();
+      playbackMode();
       const my = this.token;
       return new Promise((resolve) => {
         if (!this.supported) { setTimeout(resolve, 600); return; }
@@ -93,6 +94,40 @@
     }
   };
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  /* iOS: i ljudlöst läge stängs uppläsningen av, eftersom sidans ljud räknas som "ringljud".
+     Genom att sätta ljudläget till uppspelning (och spela ett kort tyst ljud i samma tryck)
+     behandlar iOS sidan som en mediaspelare, som hörs även när telefonen står på ljudlöst. */
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const silentUrl = (() => {
+    try {
+      const rate = 8000, n = rate / 2, buf = new ArrayBuffer(44 + n), d = new DataView(buf);
+      const w = (o, str) => { for (let i = 0; i < str.length; i++) d.setUint8(o + i, str.charCodeAt(i)); };
+      w(0, "RIFF"); d.setUint32(4, 36 + n, true); w(8, "WAVE"); w(12, "fmt "); d.setUint32(16, 16, true);
+      d.setUint16(20, 1, true); d.setUint16(22, 1, true); d.setUint32(24, rate, true); d.setUint32(28, rate, true);
+      d.setUint16(32, 1, true); d.setUint16(34, 8, true); w(36, "data"); d.setUint32(40, n, true);
+      for (let i = 0; i < n; i++) d.setUint8(44 + i, 128); // 8-bitars tystnad
+      return URL.createObjectURL(new Blob([buf], { type: "audio/wav" }));
+    } catch (e) { return null; }
+  })();
+  let silentEl = null;
+  const playbackMode = () => {
+    try { if (navigator.audioSession && navigator.audioSession.type !== "playback") navigator.audioSession.type = "playback"; } catch (e) { /* ignorera */ }
+    if (!isIOS || !silentUrl) return;
+    try {
+      if (!silentEl) { silentEl = new Audio(silentUrl); silentEl.setAttribute("playsinline", ""); silentEl.preload = "auto"; }
+      silentEl.currentTime = 0;
+      const p = silentEl.play();
+      if (p && p.catch) p.catch(() => { /* utanför ett tryck: ignorera */ });
+    } catch (e) { /* ignorera */ }
+  };
+  if (isIOS) {
+    const tip = document.getElementById("ios-tip");
+    if (tip && !store.get("iosTipOk", false)) {
+      tip.hidden = false;
+      document.getElementById("ios-tip-ok").addEventListener("click", () => { tip.hidden = true; store.set("iosTipOk", true); });
+    }
+  }
 
   // iOS: när sidan kommer tillbaka från bakgrunden (eller hemskärmen) kan talkön hänga sig.
   if (Speech.supported) {
@@ -149,8 +184,7 @@
       return;
     }
     voiceSelect.innerHTML = Speech.voices.map((v) => `<option value="${esc(v.name)}"${Speech.voice && v.name === Speech.voice.name ? " selected" : ""}>${esc(v.name)} (${esc(v.lang)})</option>`).join("") || "<option>Inga engelska röster hittades</option>";
-    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    voiceNote.textContent = ios
+    voiceNote.textContent = isIOS
       ? "iPhone/iPad: de bästa brittiska rösterna är Daniel, Kate eller Serena i förbättrad kvalitet. Hämta dem under Inställningar → Hjälpmedel → Uppläst innehåll → Röster → Engelska. Ladda sedan om sidan. Kontrollera också att telefonen inte står på ljudlöst om du inte hör något."
       : Speech.hasGB
       ? "Rösterna kommer från din webbläsare och dator, så utbudet varierar mellan enheter."
